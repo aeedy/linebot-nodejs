@@ -32,6 +32,30 @@ router.get('/', function(req, res, next) {
     }
   );
 
+  var db = mongoose.connection;
+  db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+  var Schema = mongoose.Schema;
+
+  var UsersSchema = new Schema({
+    FirstName: String,
+    LastName: String
+  });
+
+  var Users = mongoose.model('Users', UsersSchema );
+  const testUsers = new Users({
+    FirstName: 'The Forest Hiker',
+    LastName: 'Test Test'
+  });
+
+  testUsers
+  .save()
+  .then(doc => {
+    console.log(doc);
+  })
+  .catch(err => {
+    console.log(err);
+  });
+
   res.sendStatus(200);
 });
 
@@ -67,7 +91,7 @@ function push_Text(text) {
       'Authorization': 'Bearer '+config.channelAccessToken
   }
   let body = JSON.stringify({
-      to: '',
+      to: 'Uc5c60cb6b8ceb2455d1b6860238f82b5',
       messages: [{
           type: 'text',
           text: 'Hellommmmmmm'
