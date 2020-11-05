@@ -1,6 +1,21 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require("mongoose");
+const line = require('@line/bot-sdk');
+const middleware = require('@line/bot-sdk').middleware;
+
+const request = require('request')
+
+const config = {
+  channelAccessToken: '8NV2ADjSDzRv9ydVQore/QCJfepyW2VOMDENeXfKT/hvIGI3VoYbTxkgX/hzurT6Jd9IX0q8TuSV8Du6UEig7SUrTo6g/azl/aTdsbCQSsG2TczPV7tUm5wEohikkMoYFneBxDv4oDyj6pfrJXBiRAdB04t89/1O/w1cDnyilFU=',
+  channelSecret: 'eb1c8ab9c2d011824dd5159006783052'
+};
+
+const client = new line.Client(config);
+const LINE_MESSAGING_API = "https://api.line.me/v2/bot/message";
+const LINE_MESSAGING_PUSH = 'https://api.line.me/v2/bot/message/push';
+const LINE_MESSAGING_REPLY = 'https://api.line.me/v2/bot/message/reply';
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
  // res.render('index', { title: 'Express' });
@@ -21,10 +36,58 @@ router.get('/', function(req, res, next) {
 });
 
 
+
 router.post('/webhook', function(req, res, next) {
-  res.sendStatus(200);
+
+  if (!Array.isArray(req.body.events)) {
+    return res.status(500).end();
+  }
+
+  //res.sendStatus(200);
+  /*
+  var text = req.body.events[0].message.text
+  var sender = req.body.events[0].source.userId
+  var replyToken = req.body.events[0].replyToken
+  console.log(text, sender, replyToken)
+  console.log(typeof sender, typeof text)
+  console.log(req.body.events[0])
+
+  return reply_Text(text,replyToken);
+  */
+ //console.log(req.body.events)
+ handleEvent2(req.body.events);
+
 });
 
+
+function reply_Text(text,reply_token) {
+  let headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer '+config.channelAccessToken
+  }
+  let body = JSON.stringify({
+      replyToken: reply_token,
+      messages: [{
+          type: 'text',
+          text: 'Hello'
+      },
+      {
+          type: 'text',
+          text: 'How are you?'
+      },
+      {
+        type: 'text',
+        text: text
+      }]
+  })
+  request.post({
+      url: 'https://api.line.me/v2/bot/message/reply',
+      headers: headers,
+      body: body
+  }, (err, res, body) => {
+      console.log('status = ' + res.statusCode);
+  });
+}
 
 
 // simple reply function
@@ -35,6 +98,56 @@ const replyText = (token, texts) => {
     texts.map((text) => ({ type: 'text', text }))
   );
 };
+
+function handleEvent2(event) {
+
+  console.log(event[0]);
+
+  switch (event[0].type) {
+    case 'message':
+      const message = event[0].message;
+      switch (message.type) {
+        case 'text':
+          return console.log(`Left: ${JSON.stringify(event)}`);
+        case 'image':
+          return console.log(`Left: ${JSON.stringify(event)}`);
+        case 'video':
+          return console.log(`Left: ${JSON.stringify(event)}`);
+        case 'audio':
+          return console.log(`Left: ${JSON.stringify(event)}`);
+        case 'location':
+          return console.log(`Left: ${JSON.stringify(event)}`);
+        case 'sticker':
+          return console.log(`Left: ${JSON.stringify(event)}`);
+        default:
+          throw new Error(`Unknown message: ${JSON.stringify(message)}`);
+      }
+
+    case 'follow':
+      return console.log(`Left: ${JSON.stringify(event)}`);
+
+    case 'unfollow':
+      return console.log(`Left: ${JSON.stringify(event)}`);
+
+    case 'join':
+      return console.log(`Left: ${JSON.stringify(event)}`);
+
+    case 'leave':
+      return console.log(`Left: ${JSON.stringify(event)}`);
+
+    case 'postback':
+      let data = event.postback.data;
+      return console.log(`Left: ${JSON.stringify(event)}`);
+
+    case 'beacon':
+      const dm = `${Buffer.from(event.beacon.dm || '', 'hex').toString('utf8')}`;
+      return replyText(event.replyToken, `${event.beacon.type} beacon hwid : ${event.beacon.hwid} with device message = ${dm}`);
+
+    default:
+      throw new Error(`Unknown event: ${JSON.stringify(event)}`);
+  }
+}
+
 
 // callback function to handle a single event
 function handleEvent(event) {
