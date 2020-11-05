@@ -7,8 +7,8 @@ const middleware = require('@line/bot-sdk').middleware;
 const request = require('request')
 
 const config = {
-  channelAccessToken: '8NV2ADjSDzRv9ydVQore/QCJfepyW2VOMDENeXfKT/hvIGI3VoYbTxkgX/hzurT6Jd9IX0q8TuSV8Du6UEig7SUrTo6g/azl/aTdsbCQSsG2TczPV7tUm5wEohikkMoYFneBxDv4oDyj6pfrJXBiRAdB04t89/1O/w1cDnyilFU=',
-  channelSecret: 'eb1c8ab9c2d011824dd5159006783052'
+  channelAccessToken: '',
+  channelSecret: ''
 };
 
 const client = new line.Client(config);
@@ -20,7 +20,7 @@ const LINE_MESSAGING_REPLY = 'https://api.line.me/v2/bot/message/reply';
 router.get('/', function(req, res, next) {
  // res.render('index', { title: 'Express' });
 
-  var mongo_uri = "mongodb://aeedymongo:Km$3Nbs<!22@ds033175.mlab.com:33175/aeedybot";
+  var mongo_uri = "";
   mongoose.Promise = global.Promise;
   mongoose.connect(mongo_uri, { useNewUrlParser: true }).then(
     () => {
@@ -67,7 +67,7 @@ function push_Text(text) {
       'Authorization': 'Bearer '+config.channelAccessToken
   }
   let body = JSON.stringify({
-      to: 'Uc5c60cb6b8ceb2455d1b6860238f82b5',
+      to: '',
       messages: [{
           type: 'text',
           text: 'Hellommmmmmm'
