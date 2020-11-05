@@ -35,7 +35,9 @@ router.get('/', function(req, res, next) {
   res.sendStatus(200);
 });
 
-
+router.post('/push',function(req,res,next){
+  return push_Text('xxxxx');
+});
 
 router.post('/webhook', function(req, res, next) {
 
@@ -58,6 +60,28 @@ router.post('/webhook', function(req, res, next) {
  handleEvent2(req.body.events);
 
 });
+
+function push_Text(text) {
+  let headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer '+config.channelAccessToken
+  }
+  let body = JSON.stringify({
+      to: 'Uc5c60cb6b8ceb2455d1b6860238f82b5',
+      messages: [{
+          type: 'text',
+          text: 'Hellommmmmmm'
+      }]
+  })
+  return request.post({
+      url: 'https://api.line.me/v2/bot/message/push',
+      headers: headers,
+      body: body
+  }, (err, res, body) => {
+      console.log('status = ' + res.statusCode);
+  });
+}
+
 
 
 function reply_Text(text,reply_token) {
@@ -100,9 +124,7 @@ const replyText = (token, texts) => {
 };
 
 function handleEvent2(event) {
-
-  console.log(event[0]);
-
+  console.log(event[0]);s
   switch (event[0].type) {
     case 'message':
       const message = event[0].message;
